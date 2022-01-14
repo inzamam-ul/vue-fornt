@@ -1,0 +1,34 @@
+{
+  "students": [
+    {
+      "stu_no": 1,
+      "name": "Tom",
+      "department": "CST",
+      "age": "22",
+      "director": "Prof. D"
+    },
+    {
+      "stu_no": 2,
+      "name": "Jurseey",
+      "department": "CST",
+      "age": "22",
+      "director": "Prof. Donal"
+    },
+    {
+      "stu_no": 3,
+      "name": "Justin",
+      "department": "ICT",
+      "age": "22",
+      "director": "Prof. Mack"
+    },
+    {
+      "stu_no": 4,
+      "name": "Hank",
+      "department": "EEE",
+      "age": "21",
+      "director": "Prof. Sonku"
+    }
+  ],
+  "comments": [{ "id": 1, "body": "some comment", "postId": 1 }],
+  "profile": { "name": "typicode" }
+}
