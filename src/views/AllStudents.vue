@@ -32,7 +32,7 @@
           />
         </template>
         <template slot-scope="scope">
-          <template v-if="tableData[0].id == ''">
+          <template v-if="tableData[0].stuno != ''">
             <el-button size="mini" @click="openEditPrompt(scope.row)"
               >Edit</el-button
             >
@@ -113,7 +113,7 @@
         </template>
       </el-table-column>
       <template v-if="tableData[0].stuno == ''">
-        <h3>No Data Available  </h3>
+        <h3>No Data Available</h3>
       </template>
     </el-table>
   </el-row>
@@ -158,10 +158,7 @@ export default {
       const newData = [...this.tableData, this.editFrom];
 
       axios
-        .post(
-          `http://localhost:3002/updateStudent/${data.stuno}`,
-          this.editFrom
-        )
+        .put(`http://localhost:3002/updateStudent/${data.stuno}`, this.editFrom)
         .then((res) => {
           this.tableData = res.data;
           this.addDialogVisible = false;
