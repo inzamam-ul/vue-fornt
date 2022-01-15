@@ -18,6 +18,7 @@
       router
     >
       <el-menu-item index="/"> Home </el-menu-item>
+      <el-menu-item index="/about" route="/about">About</el-menu-item>
       <el-menu-item index="/students">All Students</el-menu-item>
       <el-submenu index="2">
         <template slot="title">Manage Student</template>
@@ -31,7 +32,6 @@
           <el-menu-item index="2-4-3">item three</el-menu-item>
         </el-submenu>
       </el-submenu>
-      <el-menu-item index="/about" route="/about">About</el-menu-item>
     </el-menu>
   </div>
 </template>
