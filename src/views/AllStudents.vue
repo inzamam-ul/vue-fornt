@@ -12,7 +12,7 @@
       :data="
         tableData.filter(
           (data) =>
-            !search || data.name.toLowerCase().includes(search.toLowerCase())
+            !search || data.stuname.toLowerCase().includes(search.toLowerCase())
         )
       "
       style="width: 100%"
@@ -32,7 +32,7 @@
           />
         </template>
         <template slot-scope="scope">
-          <template v-if="tableData[0].stuno != ''">
+          <div v-if="tableData[0].stuno != ''">
             <el-button size="mini" @click="openEditPrompt(scope.row)"
               >Edit</el-button
             >
@@ -42,7 +42,7 @@
               @click="handleDelete(scope.row)"
               >Delete</el-button
             >
-          </template>
+          </div>
           <el-dialog
             title="Add student"
             :visible.sync="addDialogVisible"
@@ -52,29 +52,30 @@
             <el-form
               :label-position="labelPosition"
               label-width="100px"
-              :model="addFrom"
+              ref="addForm"
+              :model="addForm"
             >
               <el-form-item label="Student No">
-                <el-input v-model="addFrom.stuno"></el-input>
+                <el-input v-model="addForm.stuno"></el-input>
               </el-form-item>
               <el-form-item label="Name">
-                <el-input v-model="addFrom.stuname"></el-input>
+                <el-input v-model="addForm.stuname"></el-input>
               </el-form-item>
               <el-form-item label="Department">
-                <el-input v-model="addFrom.studept"></el-input>
+                <el-input v-model="addForm.studept"></el-input>
               </el-form-item>
               <el-form-item label="Age">
-                <el-input v-model="addFrom.stuage"></el-input>
+                <el-input v-model="addForm.stuage"></el-input>
               </el-form-item>
               <el-form-item label="Director">
-                <el-input v-model="addFrom.director"></el-input>
+                <el-input v-model="addForm.director"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="addDialogVisible = false">Cancel</el-button>
               <el-button
                 type="primary"
-                @click="handleAddStudent(addFrom.stuname)"
+                @click="handleAddStudent(addForm.stuname)"
                 >Confirm</el-button
               >
             </span>
@@ -88,34 +89,35 @@
             <el-form
               :label-position="labelPosition"
               label-width="100px"
-              :model="editFrom"
+              :model="editForm"
             >
               <el-form-item label="Name">
-                <el-input v-model="editFrom.stuname"></el-input>
+                <el-input v-model="editForm.stuname"></el-input>
               </el-form-item>
               <el-form-item label="Department">
-                <el-input v-model="editFrom.studept"></el-input>
+                <el-input v-model="editForm.studept"></el-input>
               </el-form-item>
               <el-form-item label="Age">
-                <el-input v-model="editFrom.stuage"></el-input>
+                <el-input v-model="editForm.stuage"></el-input>
               </el-form-item>
               <el-form-item label="Director">
-                <el-input v-model="editFrom.director"></el-input>
+                <el-input v-model="editForm.director"></el-input>
               </el-form-item>
-            </el-form>
+            </el-form> 
             <span slot="footer" class="dialog-footer">
               <el-button @click="editDialogVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="handleEdit(editFrom)"
+              <el-button type="primary" @click="handleEdit(editForm)"
                 >Confirm</el-button
               >
             </span>
           </el-dialog>
         </template>
       </el-table-column>
-      <template v-if="tableData[0].stuno == ''">
+     
+    </el-table>
+     <template v-if="tableData[0].stuno == ''">
         <h3>No Data Available</h3>
       </template>
-    </el-table>
   </el-row>
 </template>
 
@@ -131,14 +133,14 @@ export default {
       addDialogVisible: false,
       editDialogVisible: false,
       labelPosition: "left",
-      editFrom: {
+      editForm: {
         stuno: "",
         stuname: "",
         studept: "",
         stuage: "",
         director: "",
       },
-      addFrom: {
+      addForm: {
         stuno: "",
         stuname: "",
         studept: "",
@@ -150,15 +152,15 @@ export default {
   methods: {
     openEditPrompt(data) {
       this.editDialogVisible = true;
-      this.editFrom = { ...this.editFrom, ...data };
+      this.editForm = { ...this.editForm, ...data };
     },
     handleEdit(data) {
       console.log(data.stuno);
       this.editDialogVisible = false;
-      const newData = [...this.tableData, this.editFrom];
+      const newData = [...this.tableData, this.editForm];
 
       axios
-        .put(`http://localhost:3002/updateStudent/${data.stuno}`, this.editFrom)
+        .put(`http://localhost:3000/editStudent/${data.stuno}`, this.editForm)
         .then((res) => {
           this.tableData = res.data;
           this.addDialogVisible = false;
@@ -169,24 +171,44 @@ export default {
         });
     },
     handleAddStudent(name) {
-      const newData = [...this.tableData, this.addFrom];
+      const newData =
+        this.tableData[0].stuno == ""
+          ? [this.addForm]
+          : [...this.tableData, this.addForm];
       console.log("new data", newData);
       axios
-        .post("http://localhost:3002/addStudent", this.addFrom)
+        .post("http://localhost:3000/addStudent", this.addForm)
         .then((res) => {
           this.tableData = newData;
           this.addDialogVisible = false;
           this.$message({
-            message: `${this.addFrom.stuname} is added successfully`,
+            message: `${this.addForm.stuname} is added successfully`,
             type: "success",
           });
+          this.addForm = {}
+
         });
     },
     handleDelete(data) {
       axios
-        .delete(`http://localhost:3002/DeleteStudent/${data.stuno}`)
+        .delete(`http://localhost:3000/removeStudent/${data.stuno}`)
         .then((res) => {
-          this.tableData = res.data;
+          console.log(res.data);
+          if (res.data.length) {
+            console.log(res.data);
+            this.tableData = res.data;
+          } else {
+            this.tableData = [
+              {
+                stuno: "",
+                stuname: "",
+                studept: "",
+                stuage: "",
+                director: "",
+              },
+            ];
+          }
+          // this.tableData = res.data;
           this.addDialogVisible = false;
           this.$message({
             message: `${data.stuname} is deleted successfully`,
@@ -197,7 +219,7 @@ export default {
 
     loadData() {
       axios
-        .get("http://localhost:3002/allStudents")
+        .get("http://localhost:3000/allStudents")
         .then((res) => {
           if (res.data.length) {
             console.log(res.data);
